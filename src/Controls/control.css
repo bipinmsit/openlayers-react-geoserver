@@ -1,0 +1,13 @@
+.mouse_position {
+  position: absolute;
+  z-index: 1;
+  top:95%;
+  margin-left: 2em;
+}
+
+.measure {
+  position: absolute;
+  z-index: 1;
+  top: 6%;
+  margin-left: 30em;
+}

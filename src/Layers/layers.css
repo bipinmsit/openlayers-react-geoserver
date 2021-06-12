@@ -1,0 +1,13 @@
+.bottomleft {
+  position: absolute;
+  width: 19.3rem;
+  height: 40vh;
+  bottom: 8px;
+  left: 16px;
+  font-size: 18px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+.featureInfo {
+}
