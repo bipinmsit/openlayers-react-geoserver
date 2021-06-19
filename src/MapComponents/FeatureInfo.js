@@ -3,18 +3,12 @@ import MapContext from "../Map/MapContext";
 import { overlays } from "../Layers/Overlays";
 import ImageWMS from "ol/source/ImageWMS";
 import { Modal } from "react-bootstrap";
-import HtmlToReact from "html-to-react";
-import parse from "html-react-parser";
 
 const FeatureInfo = () => {
   const { map } = useContext(MapContext);
   const [selectIdentify, setSelectIdentify] = useState("");
-  // let [featureInfo, setFeatureInfo] = useState("");
+  let [featureInfo, setFeatureInfo] = useState(<div>bipin</div>);
   const [showModal, setShowModal] = useState(false);
-
-  var htmlInfo = document.createElement("div");
-  console.log(htmlInfo);
-  htmlInfo.innerHTML = "";
 
   const changeHandler = (e) => {
     setSelectIdentify(e.target.value);
@@ -46,8 +40,8 @@ const FeatureInfo = () => {
             evt.coordinate,
             viewResolution,
             "EPSG:3857",
-            { INFO_FORMAT: "text/html" }
-            // { INFO_FORMAT: "application/json" }
+            // { INFO_FORMAT: "text/html" }
+            { INFO_FORMAT: "application/json" }
           );
 
           if (url[i]) {
@@ -56,8 +50,7 @@ const FeatureInfo = () => {
                 return response.text();
               })
               .then(function (html) {
-                htmlInfo.innerHTML += html;
-                console.log(htmlInfo);
+                document.body(html);
               })
               .catch((err) => {
                 console.error(err);
@@ -67,8 +60,6 @@ const FeatureInfo = () => {
       }
     });
   };
-
-  // console.log(featureInfo);
 
   return (
     <div>
@@ -96,7 +87,7 @@ const FeatureInfo = () => {
         </Modal.Header>
 
         <Modal.Body>
-          <div>{parse(`$`, htmlInfo)}</div>
+          <div>Hello</div>
         </Modal.Body>
       </Modal>
     </div>

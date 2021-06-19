@@ -41,22 +41,21 @@ const MousePositionControl = () => {
   return (
     <div>
       <div id="mouse-position"></div>
-      <form>
-        <label>Projection: &nbsp; </label>
-        <select id="projection" onChange={epsgHandler} value={epsg}>
-          <option value="4326">EPSG:4326</option>
-          <option value="3857">EPSG:3857</option>
-        </select>
-        <label>Precision: &nbsp;</label>
-        <input
-          id="precision"
-          type="number"
-          min="0"
-          max="12"
-          value={precisionValue}
-          onChange={precisionValueHandler}
-        />
-      </form>
+
+      <label>Projection: &nbsp; </label>
+      <select id="projection" onChange={epsgHandler} value={epsg}>
+        <option value="4326">EPSG:4326</option>
+        <option value="3857">EPSG:3857</option>
+      </select>
+      <label>Precision: &nbsp;</label>
+      <input
+        id="precision"
+        type="number"
+        min="0"
+        max="12"
+        value={precisionValue}
+        onChange={precisionValueHandler}
+      />
     </div>
   );
 };

@@ -29,11 +29,7 @@ const MapLayerSwitcher = () => {
     return () => map.controls.remove(layerSwitcher);
   }, [map]);
 
-  return (
-    <div className="text-center p-2">
-      <h1>WebGIS Application</h1>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default MapLayerSwitcher;
