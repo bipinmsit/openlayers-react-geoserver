@@ -7,6 +7,25 @@ import GeoJSON from "ol/format/GeoJSON";
 const SelectByAttributeForm = () => {
   const [layers, setLayers] = useState([]);
 
+  const [fieldNameAndType, setFieldNameAndType] = useState([
+    {
+      fieldName: "Select Attribute",
+      fieldType: "Attribute Type",
+    },
+  ]);
+
+  const [selectedLayerName, setSelectedLayerName] = useState("");
+  const [selectFieldName, setSelectFieldName] = useState("");
+
+  const valueOperator = {
+    greater_than: ">",
+    less_than: "<",
+    equal_to: "=",
+    greater_than_equal_to: ">=",
+    less_then_equal_to: "<=",
+    like: "ILIKE",
+  };
+
   useEffect(() => {
     fetch("http://localhost:8080/geoserver/wfs?request=getCapabilities")
       .then((response) => response.text())
@@ -28,6 +47,41 @@ const SelectByAttributeForm = () => {
         }
       });
   }, []);
+
+  useEffect(() => {
+    if (!selectedLayerName) {
+      return;
+    }
+    fetch(
+      `http://localhost:8080/geoserver/wfs?service=WFS&request=DescribeFeatureType&version=1.1.0&typeName=${selectedLayerName}`
+    )
+      .then((response) => response.text())
+      .then((data) => {
+        const parser = new DOMParser();
+        let xml = parser.parseFromString(data, "text/xml");
+
+        let attributeListNode = xml.getElementsByTagName("xsd:sequence")[0];
+        // console.log(attributeListNode);
+        const attributeListCount = attributeListNode.childElementCount;
+        // console.log(attributeListCount);
+
+        for (var i = 0; i < attributeListCount; i++) {
+          const attrubuteFieldName = xml.getElementsByTagName("xsd:element")[i];
+          // console.log(attrubuteFieldName.getAttribute("name"));
+          // console.log(attrubuteFieldName.getAttribute("type"));
+          setFieldNameAndType((preValue) => [
+            ...preValue,
+            {
+              fieldName: attrubuteFieldName.getAttribute("name"),
+              fieldType: attrubuteFieldName.getAttribute("type"),
+            },
+          ]);
+        }
+      });
+    return () => {
+      setFieldNameAndType([]);
+    };
+  }, [selectedLayerName]);
 
   const queryHandler = () => {
     var layer = document.getElementById("layer");
@@ -83,10 +137,24 @@ const SelectByAttributeForm = () => {
       style: style,
     });
   };
+
+  const selectLayerHandler = (e) => {
+    setSelectedLayerName(e.target.value);
+    // setSelectedLayerName("");
+  };
+
+  const fieldTypeHandler = (e) => {
+    setSelectFieldName(e.target.value);
+  };
+
   return (
     <div>
       <label>Select Layer: &nbsp;</label>
-      <select id="layer">
+      <select
+        id="layer"
+        onChange={selectLayerHandler}
+        value={selectedLayerName}
+      >
         <option value="">Select Layer</option>
         {layers.map((layer, index) => {
           return (
@@ -99,14 +167,27 @@ const SelectByAttributeForm = () => {
       <br />
 
       <label>Select attribute: &nbsp;</label>
-      <select id="attribute">
-        <option value="">Select Attributes</option>
+      <select id="attribute" onChange={fieldTypeHandler}>
+        {fieldNameAndType.map((attributeName, index) => {
+          return (
+            <option value={attributeName.fieldType} key={index}>
+              {attributeName.fieldName}
+            </option>
+          );
+        })}
       </select>
       <br />
 
       <label>Select operator: &nbsp;</label>
       <select id="operator">
         <option value="">Select operators</option>
+        {Object.keys(valueOperator).map((key, index) => {
+          return (
+            <option value={key} key={index}>
+              {valueOperator[key]}
+            </option>
+          );
+        })}
       </select>
       <br />
 

@@ -18,10 +18,10 @@ export const overlays = new Group({
     }),
 
     new Image({
-      title: "BUILDING",
+      title: "BUILDING_ATTR",
       source: new ImageWMS({
         url: "http://localhost:8080/geoserver/wms",
-        params: { LAYERS: "custom:BUILDING" },
+        params: { LAYERS: "custom:BUILDING_ATTR" },
         ratio: 1,
         serverType: "geoserver",
       }),

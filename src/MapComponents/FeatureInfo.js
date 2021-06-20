@@ -3,11 +3,12 @@ import MapContext from "../Map/MapContext";
 import { overlays } from "../Layers/Overlays";
 import ImageWMS from "ol/source/ImageWMS";
 import { Modal } from "react-bootstrap";
+import "./indetifyTool.css";
 
 const FeatureInfo = () => {
   const { map } = useContext(MapContext);
   const [selectIdentify, setSelectIdentify] = useState("");
-  let [featureInfo, setFeatureInfo] = useState(<div>bipin</div>);
+  let [featureInfo, setFeatureInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
   const changeHandler = (e) => {
@@ -47,10 +48,13 @@ const FeatureInfo = () => {
           if (url[i]) {
             fetch(url[i])
               .then(function (response) {
-                return response.text();
+                return response.json();
               })
-              .then(function (html) {
-                document.body(html);
+              .then(function (data) {
+                if (data.features.length !== 0) {
+                  // console.log(data.features[0]);
+                  setFeatureInfo((info) => [...info, data.features[0]]);
+                }
               })
               .catch((err) => {
                 console.error(err);
@@ -78,8 +82,10 @@ const FeatureInfo = () => {
 
       <Modal
         show={showModal && selectIdentify === "activeLayer"}
+        scrollable={true}
         onHide={() => {
           setShowModal(false);
+          setFeatureInfo([]);
         }}
       >
         <Modal.Header closeButton closeLabel="">
@@ -87,7 +93,30 @@ const FeatureInfo = () => {
         </Modal.Header>
 
         <Modal.Body>
-          <div>Hello</div>
+          {featureInfo.map((attr, index) => {
+            return (
+              <div key={index}>
+                <table>
+                  <tbody>
+                    <tr>
+                      <th>Name</th>
+                      {Object.keys(attr.properties).map((key, index2) => {
+                        return <th key={index2}>{key}</th>;
+                      })}
+                    </tr>
+                    <tr>
+                      <td>{attr.id}</td>
+                      {/* <th>{attr.geometry.type}</th> */}
+                      {Object.keys(attr.properties).map((key, index) => {
+                        return <td key={index}> {attr.properties[key]} </td>;
+                      })}
+                    </tr>
+                  </tbody>
+                </table>
+                &nbsp;
+              </div>
+            );
+          })}
         </Modal.Body>
       </Modal>
     </div>
