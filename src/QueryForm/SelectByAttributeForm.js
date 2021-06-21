@@ -149,55 +149,70 @@ const SelectByAttributeForm = () => {
 
   return (
     <div>
-      <label>Select Layer: &nbsp;</label>
-      <select
-        id="layer"
-        onChange={selectLayerHandler}
-        value={selectedLayerName}
-      >
-        <option value="">Select Layer</option>
-        {layers.map((layer, index) => {
-          return (
-            <option value={layer} key={index}>
-              {layer}
-            </option>
-          );
-        })}
-      </select>
-      <br />
+      <form>
+        <div className="form-group">
+          <select
+            id="layer"
+            onChange={selectLayerHandler}
+            value={selectedLayerName}
+            className="form-control"
+          >
+            <option value="">Select Layer</option>
+            {layers.map((layer, index) => {
+              return (
+                <option value={layer} key={index}>
+                  {layer}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-      <label>Select attribute: &nbsp;</label>
-      <select id="attribute" onChange={fieldTypeHandler}>
-        {fieldNameAndType.map((attributeName, index) => {
-          return (
-            <option value={attributeName.fieldType} key={index}>
-              {attributeName.fieldName}
-            </option>
-          );
-        })}
-      </select>
-      <br />
+        <div className="form-group">
+          <select
+            id="attribute"
+            onChange={fieldTypeHandler}
+            className="form-control"
+          >
+            {fieldNameAndType.map((attributeName, index) => {
+              return (
+                <option value={attributeName.fieldType} key={index}>
+                  {attributeName.fieldName}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-      <label>Select operator: &nbsp;</label>
-      <select id="operator">
-        <option value="">Select operators</option>
-        {Object.keys(valueOperator).map((key, index) => {
-          return (
-            <option value={key} key={index}>
-              {valueOperator[key]}
-            </option>
-          );
-        })}
-      </select>
-      <br />
+        <div className="form-group">
+          <select id="operator" className="form-control">
+            <option value="">Select operators</option>
+            {Object.keys(valueOperator).map((key, index) => {
+              return (
+                <option value={key} key={index}>
+                  {valueOperator[key]}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-      <label>Enter value: &nbsp;</label>
-      <input type="text" id="value" name="value" />
-      <br />
+        <div className="form-group">
+          <input
+            type="text"
+            id="value"
+            name="value"
+            placeholder="Enter value"
+            className="form-control"
+          />
+        </div>
 
-      <button className="btn btn-success" onClick={queryHandler}>
-        Load Query
-      </button>
+        <div className="form-group">
+          <button className="btn btn-success" onClick={queryHandler}>
+            Load Query
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
