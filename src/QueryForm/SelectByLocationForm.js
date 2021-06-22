@@ -24,7 +24,7 @@ const SelectByLocationForm = () => {
       });
   }, []);
 
-  console.log(layers);
+  // console.log(layers);
 
   return (
     <div>

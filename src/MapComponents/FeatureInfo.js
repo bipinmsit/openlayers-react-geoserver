@@ -67,17 +67,21 @@ const FeatureInfo = () => {
 
   return (
     <div>
-      <div>
-        <label>GetFeatureinfo: &nbsp;</label>
-        <select
-          className="custom-select mr-sm-2"
-          id="inlineFormCustomSelect"
-          onChange={changeHandler}
-          value={selectIdentify}
-        >
-          <option value="default">Select Option</option>
-          <option value="activeLayer">Identify Tool</option>
-        </select>
+      <div className="featureInfo">
+        <form>
+          <label style={{ color: "blue" }}>
+            <strong>GetFeatureinfo:</strong> &nbsp;
+          </label>
+          <select
+            className="custom-select mr-sm-2"
+            id="inlineFormCustomSelect"
+            onChange={changeHandler}
+            value={selectIdentify}
+          >
+            <option value="default">Select Option</option>
+            <option value="activeLayer">Identify Tool</option>
+          </select>
+        </form>
       </div>
 
       <Modal

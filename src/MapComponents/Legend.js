@@ -1,25 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { overlays } from "../Layers/Overlays";
 
 const Legend = () => {
+  const [layerNameAndStyle, setLayerNameAndStyle] = useState([]);
   // Creating Legend
-  var no_layers = overlays.getLayers().getLength();
+  useEffect(() => {
+    var no_layers = overlays.getLayers().getLength();
 
-  var layers = [];
-  var i;
-  for (i = 0; i < no_layers; i++) {
-    layers.push({
-      src:
-        "http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" +
-        overlays.getLayers().item(i).get("title"),
-      title: overlays.getLayers().item(i).get("title"),
-    });
-  }
+    for (var i = 0; i < no_layers; i++) {
+      let value = {
+        src:
+          "http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" +
+          overlays.getLayers().item(i).get("title"),
+        title: overlays.getLayers().item(i).get("title"),
+      };
+
+      setLayerNameAndStyle((prevState) => [...prevState, value]);
+    }
+  }, [overlays]);
 
   return (
     <div>
       <h4>Legend</h4>
-      {layers.map((layer, index) => {
+      {layerNameAndStyle.map((layer, index) => {
         return (
           <div key={index}>
             <p>{layer.title}</p>

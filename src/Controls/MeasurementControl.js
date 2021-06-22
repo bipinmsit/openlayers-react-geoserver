@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from "react";
 import "ol/ol.css";
-import "./control.css";
 import Draw from "ol/interaction/Draw";
 import Overlay from "ol/Overlay";
 import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
@@ -150,7 +149,7 @@ const MeasurementControl = () => {
     var formatArea = function (polygon) {
       var area = getArea(polygon);
       var output;
-      if (area > 10000) {
+      if (area > 100000) {
         output =
           Math.round((area / 1000000) * 100) / 100 + " " + "km<sup>2</sup>";
       } else {
@@ -301,7 +300,7 @@ const MeasurementControl = () => {
     <div>
       <form className="measure">
         <label htmlFor="type" style={{ color: "blue" }}>
-          <strong>Measurement type</strong> &nbsp;
+          <strong>Measurement type:</strong> &nbsp;
         </label>
         <select id="type">
           <option value="select">Select Measurement Option</option>

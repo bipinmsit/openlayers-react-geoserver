@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import MousePosition from "ol/control/MousePosition";
 import { createStringXY } from "ol/coordinate";
 import MapContext from "../Map/MapContext";
-import "./control.css";
 
 const MousePositionControl = () => {
   const [precisionValue, setPrecisionValue] = useState(5);
@@ -39,7 +38,7 @@ const MousePositionControl = () => {
   };
 
   return (
-    <div>
+    <div className="mousePosition">
       <div id="mouse-position"></div>
 
       <label>Projection: &nbsp; </label>

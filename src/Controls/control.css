@@ -1,13 +1,38 @@
-.mouse_position {
+.mousePosition {
   position: absolute;
   z-index: 1;
-  top:95%;
-  margin-left: 2em;
+  top: 83%;
+}
+
+.featureInfo {
+  position: absolute;
+  z-index: 1;
+  margin-left: 5em;
 }
 
 .measure {
   position: absolute;
   z-index: 1;
-  top: 6%;
-  margin-left: 30em;
+  margin-left: 21em;
+}
+
+tr {
+  cursor: pointer;
+}
+
+.wmsLayers {
+  position: absolute;
+  z-index: 1;
+  margin-left: 46em;
+}
+
+.selected {
+  background-color: #0f0;
+}
+
+.zoomToExtent {
+  position: absolute;
+  z-index: 1;
+  top: 14%;
+  margin-left: .5em;
 }

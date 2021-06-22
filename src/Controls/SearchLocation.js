@@ -22,7 +22,7 @@ const SearchLocation = () => {
     map.controls.push(geocoder);
   });
 
-  return <div></div>;
+  return null;
 };
 
 export default SearchLocation;

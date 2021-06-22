@@ -10,6 +10,8 @@ import {
   MousePositionControl,
   MeasurementControl,
   SearchLocation,
+  AddWmsLayers,
+  ZoomtoExtentControl,
 } from "./Controls";
 import "ol/ol.css";
 import Legend from "./MapComponents/Legend";
@@ -58,9 +60,11 @@ const App = () => {
 
             <Controls>
               <FullScreenControl />
+              <ZoomtoExtentControl />
               <MousePositionControl />
               <MeasurementControl />
               <SearchLocation />
+              <AddWmsLayers />
             </Controls>
           </Map>
         </div>

@@ -15,7 +15,7 @@ const MapLayerSwitcher = () => {
     }
 
     const layerSwitcher = new LayerSwitcher({
-      activationMode: "click",
+      // activationMode: "click",
       startActive: false,
       tipLabel: "Layers", // Optional label for button
       groupSelectStyle: "children", // Can be 'children' [default], 'group' or 'none'
@@ -29,7 +29,13 @@ const MapLayerSwitcher = () => {
     return () => map.controls.remove(layerSwitcher);
   }, [map]);
 
-  return <div></div>;
+  return (
+    <div>
+      <h4 className="text-center p-2" style={{ backgroundColor: "#ccffff" }}>
+        WebGIS Application
+      </h4>
+    </div>
+  );
 };
 
 export default MapLayerSwitcher;
