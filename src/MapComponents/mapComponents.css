@@ -1,0 +1,15 @@
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.mapLegend {
+  margin-left: 1em;
+  overflow-y: scroll;
+}
