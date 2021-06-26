@@ -3,7 +3,6 @@ import MapContext from "../Map/MapContext";
 import { overlays } from "../Layers/Overlays";
 import ImageWMS from "ol/source/ImageWMS";
 import { Modal } from "react-bootstrap";
-import "./indetifyTool.css";
 
 const FeatureInfo = () => {
   const { map } = useContext(MapContext);

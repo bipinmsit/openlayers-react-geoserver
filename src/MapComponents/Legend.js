@@ -20,7 +20,7 @@ const Legend = () => {
   }, [overlays]);
 
   return (
-    <div>
+    <div className="mapLegend">
       <h4>Legend</h4>
       {layerNameAndStyle.map((layer, index) => {
         return (

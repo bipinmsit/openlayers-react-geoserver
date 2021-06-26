@@ -27,7 +27,7 @@ const SelectByLocationForm = () => {
   // console.log(layers);
 
   return (
-    <div>
+    <div className="selectByLocationForm">
       <form>
         <div className="form-group">
           <select className="form-control">

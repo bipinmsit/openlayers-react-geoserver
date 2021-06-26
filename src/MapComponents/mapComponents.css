@@ -10,6 +10,10 @@ td {
   padding-right: 5px;
 }
 .mapLegend {
-  margin-left: 1em;
+  position: absolute;
+  top: 35%;
+  left: 1em;
+  height: 47vh;
+  width: 24.2vw;
   overflow-y: scroll;
 }

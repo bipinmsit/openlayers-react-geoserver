@@ -83,7 +83,13 @@ const AddWmsLayers = () => {
     // console.log(convertedExtent);
 
     if (map) {
-      map.getView().fit(convertedExtent, { size: map.getSize(), maxZoom: 16 });
+      map
+        .getView()
+        .fit(convertedExtent, {
+          size: map.getSize(),
+          maxZoom: 16,
+          duration: 1590,
+        });
       // map.addControl(layerSwitcher);
     }
   };

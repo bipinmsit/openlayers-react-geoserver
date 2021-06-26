@@ -40,12 +40,12 @@ const MousePositionControl = () => {
   return (
     <div className="mousePosition">
       <div id="mouse-position"></div>
-
       <label>Projection: &nbsp; </label>
       <select id="projection" onChange={epsgHandler} value={epsg}>
         <option value="4326">EPSG:4326</option>
         <option value="3857">EPSG:3857</option>
       </select>
+      &nbsp;
       <label>Precision: &nbsp;</label>
       <input
         id="precision"
