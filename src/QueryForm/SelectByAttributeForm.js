@@ -4,6 +4,10 @@ import { Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
 import GeoJSON from "ol/format/GeoJSON";
 import MapContext from "../Map/MapContext";
+import { transformExtent } from "ol/proj";
+import proj4 from "proj4";
+import { register } from "ol/proj/proj4";
+import { get as getProjection } from "ol/proj";
 import "./queryForm.css";
 
 const SelectByAttributeForm = () => {
@@ -31,6 +35,17 @@ const SelectByAttributeForm = () => {
     greater_than_equal_to: ">=",
     less_then_equal_to: "<=",
     like: "ILIKE",
+  };
+
+  const createCustomProjection = () => {
+    proj4.defs(
+      "EPSG:2260",
+      "+proj=tmerc +lat_0=38.83333333333334 +lon_0=-74.5 +k=0.9999 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs "
+    );
+    register(proj4);
+    const customProjection = getProjection("EPSG:2260");
+
+    return customProjection;
   };
 
   // Fetch WFS Layer from geoserver
@@ -109,36 +124,45 @@ const SelectByAttributeForm = () => {
       "'&outputFormat=application/json";
     // console.log(url);
 
-    var style = new Style({
-      fill: new Fill({
-        color: "rgba(255, 255, 255, 0.7)",
-      }),
+    var highlightStyle = new Style({
       stroke: new Stroke({
-        color: "#ffcc33",
-        width: 3,
+        color: "#f00",
+        width: 1,
       }),
-
-      image: new Circle({
-        radius: 7,
+      fill: new Fill({
+        color: "rgba(255,0,0,0.1)",
+      }),
+      text: new Text({
+        font: "12px Calibri,sans-serif",
         fill: new Fill({
-          color: "#ffcc33",
+          color: "#000",
+        }),
+        stroke: new Stroke({
+          color: "#f00",
+          width: 3,
         }),
       }),
     });
 
     var geojson = new VectorLayer({
-      //title:'dfdfd',
-      //title: '<h5>' + value_crop+' '+ value_param +' '+ value_seas+' '+value_level+'</h5>',
       source: new VectorSource({
         url: url,
         format: new GeoJSON(),
       }),
-      style: style,
+      style: highlightStyle,
     });
 
     geojson.getSource().on("addfeature", function () {
-      alert(geojson.getSource().getExtent());
-      map.getView().fit(geojson.getSource().getExtent(), {
+      const extent = geojson.getSource().getExtent();
+      console.log(extent);
+      const convertedExtent = transformExtent(
+        extent,
+        createCustomProjection(),
+        "EPSG:3857"
+      );
+      console.log(convertedExtent);
+      // alert(geojson.getSource().getExtent());
+      map.getView().fit(convertedExtent, {
         duration: 1590,
         size: map.getSize(),
       });
@@ -156,7 +180,10 @@ const SelectByAttributeForm = () => {
       });
   };
 
-  const rowClickHandler = () => {};
+  const rowClickHandler = (e) => {
+    const row = e.target.parentElement;
+    row.style.backgroundColor = "blue";
+  };
 
   const layerNameHandler = (e) => {
     setSelectedLayerName(e.target.value);
