@@ -1,8 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MapContext from "../Map/MapContext";
 import ImageWMS from "ol/source/ImageWMS";
 import { Modal } from "react-bootstrap";
 import { OverlayContext } from "../Layers/Overlays";
+import { set } from "ol/transform";
 
 const FeatureInfo = () => {
   const { map } = useContext(MapContext);
@@ -12,64 +13,70 @@ const FeatureInfo = () => {
   let [featureInfo, setFeatureInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  // console.log(overlays.getLayers().getLength());
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    if (selectIdentify === "activeLayer") {
+      map.on("singleclick", getFeatureInfo);
+    } else if (selectIdentify === "default") {
+      map.un("singleclick", featureInfo);
+    }
+  });
 
   const changeHandler = (e) => {
     setSelectIdentify(e.target.value);
+  };
 
-    // when click on the feature then you will get the feature info
-    map.on("singleclick", (evt) => {
-      setShowModal(true);
+  const getFeatureInfo = (evt) => {
+    setShowModal(true);
 
-      var viewResolution = /** @type {number} */ (
-        map.getView().getResolution()
-      );
-      var num_layers = overlayLayers.length;
-      var url = [];
-      var wmsSource = [];
-      var layerParams = [];
-      for (var i = 0; i < num_layers; i++) {
-        var visibility = overlayLayers[i].getVisible();
-        if (visibility) {
-          layerParams[i] = overlayLayers[i].getSource().getParams().LAYERS;
-          // console.log(overlayLayers[i].getSource().getParams().LAYERS);
+    var viewResolution = /** @type {number} */ (map.getView().getResolution());
+    var num_layers = overlayLayers.length;
+    var url = [];
+    var wmsSource = [];
+    var layerParams = [];
+    for (var i = 0; i < num_layers; i++) {
+      var visibility = overlayLayers[i].getVisible();
+      if (visibility) {
+        layerParams[i] = overlayLayers[i].getSource().getParams().LAYERS;
+        // console.log(overlayLayers[i].getSource().getParams().LAYERS);
 
-          wmsSource[i] = new ImageWMS({
-            url: "http://localhost:8080/geoserver/wms",
-            params: { LAYERS: layerParams[i] },
-            serverType: "geoserver",
-            crossOrigin: "anonymous",
-          });
+        wmsSource[i] = new ImageWMS({
+          url: "http://localhost:8080/geoserver/wms",
+          params: { LAYERS: layerParams[i] },
+          serverType: "geoserver",
+          crossOrigin: "anonymous",
+        });
 
-          // console.log(wmsSource[i]);
+        // console.log(wmsSource[i]);
 
-          url[i] = wmsSource[i].getFeatureInfoUrl(
-            evt.coordinate,
-            viewResolution,
-            "EPSG:3857",
-            // { INFO_FORMAT: "text/html" }
-            { INFO_FORMAT: "application/json" }
-          );
+        url[i] = wmsSource[i].getFeatureInfoUrl(
+          evt.coordinate,
+          viewResolution,
+          "EPSG:3857",
+          // { INFO_FORMAT: "text/html" }
+          { INFO_FORMAT: "application/json" }
+        );
 
-          // console.log(url[i]);
+        // console.log(url[i]);
 
-          if (url[i]) {
-            fetch(url[i])
-              .then(function (response) {
-                return response.json();
-              })
-              .then(function (data) {
-                if (data.features.length !== 0) {
-                  setFeatureInfo((info) => [...info, data.features[0]]);
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-              });
-          }
+        if (url[i]) {
+          fetch(url[i])
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (data) {
+              if (data.features.length !== 0) {
+                setFeatureInfo((info) => [...info, data.features[0]]);
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+            });
         }
       }
-    });
+    }
   };
 
   // console.log(featureInfo);
@@ -107,9 +114,6 @@ const FeatureInfo = () => {
 
         <Modal.Body>
           {featureInfo.map((attr, index) => {
-            {
-              /* console.log(attr); */
-            }
             return (
               <div key={index}>
                 <table>
