@@ -2,11 +2,17 @@ import React, { useContext, useEffect } from "react";
 import MapContext from "../Map/MapContext";
 import "ol-layerswitcher/dist/ol-layerswitcher.css";
 import LayerSwitcher from "ol-layerswitcher";
-import { overlays } from "./Overlays";
-import { baseMaps } from "./BaseMaps";
-
+import { OverlayContext } from "../Layers/Overlays";
+import Group from "ol/layer/Group";
 const MapLayerSwitcher = () => {
   const { map } = useContext(MapContext);
+  const [overlayLayers, setOverlayLayers] = useContext(OverlayContext);
+
+  let overlays = new Group({
+    title: "Overlays",
+    visible: true,
+    layers: overlayLayers,
+  });
 
   useEffect(() => {
     // Layers list toggling options
@@ -23,19 +29,16 @@ const MapLayerSwitcher = () => {
     });
 
     map.addControl(layerSwitcher);
-    map.addLayer(baseMaps);
+    // map.addLayer(baseMaps);
     map.addLayer(overlays);
 
-    return () => map.controls.remove(layerSwitcher);
-  }, [map]);
+    return () => {
+      map.controls.remove(layerSwitcher);
+      map.removeLayer(overlays);
+    };
+  }, [overlayLayers, map]);
 
-  return (
-    <div>
-      <h4 className="text-center p-2" style={{ backgroundColor: "#ccffff" }}>
-        WebGIS Application
-      </h4>
-    </div>
-  );
+  return null;
 };
 
 export default MapLayerSwitcher;

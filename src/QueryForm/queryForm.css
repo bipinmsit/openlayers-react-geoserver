@@ -1,0 +1,18 @@
+.selectByAttributeForm {
+  position: absolute;
+  top: 12%;
+  left: 1em;
+  width: 24.2vw;
+}
+
+.selectByLocationForm {
+  position: absolute;
+  top: 12%;
+  left: 1em;
+  width: 24.2vw;
+}
+
+.queryOutputTable {
+  position: absolute;
+  top: 90%;
+}

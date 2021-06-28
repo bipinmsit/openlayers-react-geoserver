@@ -33,6 +33,6 @@ tr {
 .zoomToExtent {
   position: absolute;
   z-index: 1;
-  top: 14%;
+  top: 15%;
   margin-left: .5em;
 }

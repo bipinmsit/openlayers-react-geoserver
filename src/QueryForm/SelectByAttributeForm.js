@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Fill, Stroke, Circle, Style } from "ol/style";
 import { Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
 import GeoJSON from "ol/format/GeoJSON";
+import MapContext from "../Map/MapContext";
+import { transformExtent } from "ol/proj";
+import proj4 from "proj4";
+import { register } from "ol/proj/proj4";
+import { get as getProjection } from "ol/proj";
+import "./queryForm.css";
 
 const SelectByAttributeForm = () => {
   const [layers, setLayers] = useState([]);
-
   const [fieldNameAndType, setFieldNameAndType] = useState([
     {
       fieldName: "Select Attribute",
@@ -16,6 +21,12 @@ const SelectByAttributeForm = () => {
 
   const [selectedLayerName, setSelectedLayerName] = useState("");
   const [selectFieldName, setSelectFieldName] = useState("");
+  const [selectOperator, setSelectOperator] = useState("");
+  const [inboxValue, setInboxValue] = useState("");
+  const [queryOutputRecord, setQueryOutputRecord] = useState([]);
+  const [queryOutputHeader, setQueryOutputHeader] = useState([]);
+
+  const { map } = useContext(MapContext);
 
   const valueOperator = {
     greater_than: ">",
@@ -26,6 +37,18 @@ const SelectByAttributeForm = () => {
     like: "ILIKE",
   };
 
+  const createCustomProjection = () => {
+    proj4.defs(
+      "EPSG:2260",
+      "+proj=tmerc +lat_0=38.83333333333334 +lon_0=-74.5 +k=0.9999 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs "
+    );
+    register(proj4);
+    const customProjection = getProjection("EPSG:2260");
+
+    return customProjection;
+  };
+
+  // Fetch WFS Layer from geoserver
   useEffect(() => {
     fetch("http://localhost:8080/geoserver/wfs?request=getCapabilities")
       .then((response) => response.text())
@@ -48,6 +71,7 @@ const SelectByAttributeForm = () => {
       });
   }, []);
 
+  // Extract field names from WFS Layers
   useEffect(() => {
     if (!selectedLayerName) {
       return;
@@ -83,136 +107,197 @@ const SelectByAttributeForm = () => {
     };
   }, [selectedLayerName]);
 
-  const queryHandler = () => {
-    var layer = document.getElementById("layer");
-    var value_layer = layer.options[layer.selectedIndex].value;
+  const queryHandler = (e) => {
+    e.preventDefault();
 
-    var attribute = document.getElementById("attributes");
-    var value_attribute = attribute.options[attribute.selectedIndex].text;
-    // alert(value_attribute);
-
-    var operator = document.getElementById("operator");
-    var value_operator = operator.options[operator.selectedIndex].value;
-    // alert(value_operator);
-
-    var txt = document.getElementById("value");
-    var value_txt = txt.value;
+    // console.log(selectedLayerName, selectFieldName, selectOperator, inboxValue);
 
     var url =
-      "http://localhost:8082/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=" +
-      value_layer +
+      "http://localhost:8080/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=" +
+      selectedLayerName +
       "&CQL_FILTER=" +
-      value_attribute +
+      selectFieldName +
       "+" +
-      value_operator +
+      selectOperator +
       "+'" +
-      value_txt +
+      inboxValue +
       "'&outputFormat=application/json";
-    // alert(url);
+    // console.log(url);
 
-    var style = new Style({
-      fill: new Fill({
-        color: "rgba(255, 255, 255, 0.7)",
-      }),
+    var highlightStyle = new Style({
       stroke: new Stroke({
-        color: "#ffcc33",
-        width: 3,
+        color: "#f00",
+        width: 1,
       }),
-
-      image: new Circle({
-        radius: 7,
+      fill: new Fill({
+        color: "rgba(255,0,0,0.1)",
+      }),
+      text: new Text({
+        font: "12px Calibri,sans-serif",
         fill: new Fill({
-          color: "#ffcc33",
+          color: "#000",
+        }),
+        stroke: new Stroke({
+          color: "#f00",
+          width: 3,
         }),
       }),
     });
 
     var geojson = new VectorLayer({
-      //title:'dfdfd',
-      //title: '<h5>' + value_crop+' '+ value_param +' '+ value_seas+' '+value_level+'</h5>',
       source: new VectorSource({
         url: url,
         format: new GeoJSON(),
       }),
-      style: style,
+      style: highlightStyle,
     });
+
+    geojson.getSource().on("addfeature", function () {
+      const extent = geojson.getSource().getExtent();
+      // console.log(extent);
+      const convertedExtent = transformExtent(
+        extent,
+        createCustomProjection(),
+        "EPSG:3857"
+      );
+      console.log(convertedExtent);
+      // alert(geojson.getSource().getExtent());
+      map.getView().fit(convertedExtent, {
+        duration: 1590,
+        size: map.getSize(),
+      });
+    });
+    // overlays.getLayers().push(geojson);
+    map.addLayer(geojson);
+    fetch(url)
+      .then((response) => response.json())
+      .then((out) => {
+        const { features } = out;
+        const { properties } = features[0];
+
+        setQueryOutputHeader(Object.keys(properties));
+        setQueryOutputRecord(features);
+      });
   };
 
-  const selectLayerHandler = (e) => {
+  const rowClickHandler = (e) => {
+    const row = e.target.parentElement;
+    row.style.backgroundColor = "blue";
+  };
+
+  const layerNameHandler = (e) => {
     setSelectedLayerName(e.target.value);
     // setSelectedLayerName("");
   };
 
-  const fieldTypeHandler = (e) => {
+  const fieldNameHandler = (e) => {
     setSelectFieldName(e.target.value);
+  };
+
+  const operatorNameHandler = (e) => {
+    setSelectOperator(e.target.value);
+  };
+
+  const inputBoxValueHandler = (e) => {
+    setInboxValue(e.target.value);
   };
 
   return (
     <div>
-      <form>
-        <div className="form-group">
-          <select
-            id="layer"
-            onChange={selectLayerHandler}
-            value={selectedLayerName}
-            className="form-control"
-          >
-            <option value="">Select Layer</option>
-            {layers.map((layer, index) => {
+      <div className="selectByAttributeForm">
+        <form>
+          <div className="form-group">
+            <select
+              id="layer"
+              onChange={layerNameHandler}
+              value={selectedLayerName}
+              className="form-control"
+            >
+              <option value="">Select Layer</option>
+              {layers.map((layer, index) => {
+                return (
+                  <option value={layer} key={index}>
+                    {layer}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <select
+              id="attribute"
+              onChange={fieldNameHandler}
+              className="form-control"
+            >
+              {fieldNameAndType.map((attributeName, index) => {
+                return (
+                  <option value={attributeName.fieldName} key={index}>
+                    {attributeName.fieldName}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <select
+              id="operator"
+              className="form-control"
+              onChange={operatorNameHandler}
+            >
+              <option value="">Select operators</option>
+              {Object.keys(valueOperator).map((key, index) => {
+                return (
+                  <option value={valueOperator[key]} key={index}>
+                    {valueOperator[key]}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <input
+              type="number"
+              id="value"
+              name="value"
+              placeholder="Enter value"
+              className="form-control"
+              onChange={inputBoxValueHandler}
+              value={inboxValue}
+            />
+          </div>
+
+          <div className="form-group">
+            <button className="btn btn-success" onClick={queryHandler}>
+              Load Query
+            </button>
+          </div>
+        </form>
+      </div>
+      <div className="queryOutputTable">
+        <table>
+          <thead>
+            <tr>
+              {queryOutputHeader.map((header, index) => {
+                return <th key={index}>{header}</th>;
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {queryOutputRecord.map((queryOutput, index) => {
               return (
-                <option value={layer} key={index}>
-                  {layer}
-                </option>
+                <tr key={index} onClick={rowClickHandler}>
+                  {Object.keys(queryOutput.properties).map((key, index) => {
+                    return <td key={index}>{queryOutput.properties[key]}</td>;
+                  })}
+                </tr>
               );
             })}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <select
-            id="attribute"
-            onChange={fieldTypeHandler}
-            className="form-control"
-          >
-            {fieldNameAndType.map((attributeName, index) => {
-              return (
-                <option value={attributeName.fieldType} key={index}>
-                  {attributeName.fieldName}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <select id="operator" className="form-control">
-            <option value="">Select operators</option>
-            {Object.keys(valueOperator).map((key, index) => {
-              return (
-                <option value={key} key={index}>
-                  {valueOperator[key]}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <input
-            type="text"
-            id="value"
-            name="value"
-            placeholder="Enter value"
-            className="form-control"
-          />
-        </div>
-
-        <div className="form-group">
-          <button className="btn btn-success" onClick={queryHandler}>
-            Load Query
-          </button>
-        </div>
-      </form>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

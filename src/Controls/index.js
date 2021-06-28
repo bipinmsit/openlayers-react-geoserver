@@ -3,8 +3,8 @@ import FullScreenControl from "./FullScreenControl";
 import MousePositionControl from "./MousePositionControl";
 import MeasurementControl from "./MeasurementControl";
 import SearchLocation from "./SearchLocation";
-import AddWmsLayers from "./AddWmsLayers";
 import ZoomtoExtentControl from "./ZoomToExtentControl";
+import MapLayerSwitcher from "../Controls/MapLayerSwitcher";
 import "./control.css";
 
 export {
@@ -13,6 +13,6 @@ export {
   MousePositionControl,
   MeasurementControl,
   SearchLocation,
-  AddWmsLayers,
   ZoomtoExtentControl,
+  MapLayerSwitcher
 };

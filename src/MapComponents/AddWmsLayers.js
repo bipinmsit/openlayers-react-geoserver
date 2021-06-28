@@ -1,14 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { overlays } from "../Layers/Overlays";
+import { OverlayContext } from "../Layers/Overlays";
 import Image from "ol/layer/Image";
 import ImageWMS from "ol/source/ImageWMS";
-import LayerSwitcher from "ol-layerswitcher";
 import MapContext from "../Map/MapContext";
 import { transformExtent } from "ol/proj";
-import View from "ol/View";
-import { boundingExtent } from "ol/extent";
-import ZoomToExtent from "ol/control/ZoomToExtent";
 
 const AddWmsLayers = () => {
   const [showModal, setShowModal] = useState(false);
@@ -17,6 +13,7 @@ const AddWmsLayers = () => {
   const [layerDetails, setLayerDetails] = useState([]);
 
   const { map } = useContext(MapContext);
+  const [overlayLayers, setOverlayLayers] = useContext(OverlayContext);
 
   useEffect(() => {
     fetch("http://localhost:8080/geoserver/wms?request=getCapabilities")
@@ -76,7 +73,15 @@ const AddWmsLayers = () => {
       }),
     });
 
-    overlays.getLayers().push(layer_wms);
+    // console.log(layer_wms);
+
+    setOverlayLayers((prevState) => [...prevState, layer_wms]);
+    // setOverlayLayers([...overlayLayers, layer_wms]);
+    // overlayLayers.push(layer_wms);
+
+    // console.log(overlayLayers);
+
+    // overlays.getLayers().push(layer_wms);
 
     const getLayerDetailsFromTitle = layerDetails.find(
       (obj) => obj.layerTitle === title
@@ -87,8 +92,13 @@ const AddWmsLayers = () => {
     // console.log(convertedExtent);
 
     if (map) {
-      map.getView().fit(convertedExtent, { size: map.getSize(), maxZoom: 16 });
+      map.getView().fit(convertedExtent, {
+        size: map.getSize(),
+        maxZoom: 16,
+        duration: 1590,
+      });
       // map.addControl(layerSwitcher);
+      // layerSwitcher.renderPanel();
     }
   };
 

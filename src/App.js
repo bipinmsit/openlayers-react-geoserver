@@ -1,28 +1,35 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Map from "./Map";
-import { Layers, MapLayerSwitcher } from "./Layers";
 import { fromLonLat } from "ol/proj";
 import "./App.css";
+import "ol/ol.css";
 import {
   Controls,
   FullScreenControl,
   MousePositionControl,
   MeasurementControl,
   SearchLocation,
-  AddWmsLayers,
   ZoomtoExtentControl,
+  MapLayerSwitcher,
 } from "./Controls";
-import "ol/ol.css";
-import Legend from "./MapComponents/Legend";
-import FeatureInfo from "./MapComponents/FeatureInfo";
-import QuerySelector from "./QueryForm/QuerySelector";
-import SelectByLocationForm from "./QueryForm/SelectByLocationForm";
-import SelectByAttributeForm from "./QueryForm/SelectByAttributeForm";
+
+import {
+  MapComponents,
+  Legend,
+  FeatureInfo,
+  AddWmsLayers,
+} from "./MapComponents";
+import {
+  QuerySelector,
+  SelectByAttributeForm,
+  SelectByLocationForm,
+} from "./QueryForm";
+import NavBar from "./NavBar";
+import { Overlays } from "./Layers/Overlays";
 
 const App = () => {
-  const [zoom, setZoom] = useState(15);
-  const [attributQueryTable, setAttributeQueryTable] = useState(false);
+  const [attributQueryTable, setAttributeQueryTable] = useState(true);
   const [locationQueryTable, setLocationQueryTable] = useState(false);
 
   const attributeStateHandler = () => {
@@ -38,35 +45,44 @@ const App = () => {
   return (
     <div>
       <div className="row">
+        <div className="col">
+          <NavBar />
+        </div>
+      </div>
+      <div className="row">
         <div className="col-3 p-2">
-          <QuerySelector
-            attribute={attributeStateHandler}
-            location={locationStateHandler}
-          />
-          {attributQueryTable ? (
-            <SelectByAttributeForm />
-          ) : locationQueryTable ? (
-            <SelectByLocationForm />
-          ) : null}
-
-          <Legend />
+          <div>
+            <QuerySelector
+              attribute={attributeStateHandler}
+              location={locationStateHandler}
+            />
+          </div>
         </div>
         <div className="col-9">
-          <Map center={fromLonLat([-73.82745, 41.07567])} zoom={zoom}>
-            <Layers>
-              <MapLayerSwitcher />
-              <FeatureInfo />
-            </Layers>
+          <Overlays>
+            <Map center={fromLonLat([-73.82745, 41.07567])} zoom={15}>
+              <MapComponents>
+                <Legend />
+                <FeatureInfo />
+                <AddWmsLayers />
+              </MapComponents>
 
-            <Controls>
-              <FullScreenControl />
-              <ZoomtoExtentControl />
-              <MousePositionControl />
-              <MeasurementControl />
-              <SearchLocation />
-              <AddWmsLayers />
-            </Controls>
-          </Map>
+              {attributQueryTable ? (
+                <SelectByAttributeForm />
+              ) : locationQueryTable ? (
+                <SelectByLocationForm />
+              ) : null}
+
+              <Controls>
+                <FullScreenControl />
+                <MapLayerSwitcher />
+                <ZoomtoExtentControl />
+                <MousePositionControl />
+                <MeasurementControl />
+                <SearchLocation />
+              </Controls>
+            </Map>
+          </Overlays>
         </div>
       </div>
     </div>
