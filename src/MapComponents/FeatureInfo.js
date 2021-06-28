@@ -1,14 +1,18 @@
 import React, { useContext, useState } from "react";
 import MapContext from "../Map/MapContext";
-import { overlays } from "../Layers/Overlays";
 import ImageWMS from "ol/source/ImageWMS";
 import { Modal } from "react-bootstrap";
+import { OverlayContext } from "../Layers/Overlays";
 
 const FeatureInfo = () => {
   const { map } = useContext(MapContext);
+  const [overlayLayers, setOverlayLayers] = useContext(OverlayContext);
+
   const [selectIdentify, setSelectIdentify] = useState("");
   let [featureInfo, setFeatureInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
+
+  // console.log(overlays.getLayers().getLength());
 
   const changeHandler = (e) => {
     setSelectIdentify(e.target.value);
@@ -20,21 +24,24 @@ const FeatureInfo = () => {
       var viewResolution = /** @type {number} */ (
         map.getView().getResolution()
       );
-      var num_layers = overlays.getLayers().getLength();
+      var num_layers = overlayLayers.length;
       var url = [];
       var wmsSource = [];
-      var layerTitile = [];
+      var layerParams = [];
       for (var i = 0; i < num_layers; i++) {
-        var visibility = overlays.getLayers().item(i).getVisible();
+        var visibility = overlayLayers[i].getVisible();
         if (visibility) {
-          layerTitile[i] = overlays.getLayers().item(i).get("title");
+          layerParams[i] = overlayLayers[i].getSource().getParams().LAYERS;
+          // console.log(overlayLayers[i].getSource().getParams().LAYERS);
 
           wmsSource[i] = new ImageWMS({
             url: "http://localhost:8080/geoserver/wms",
-            params: { LAYERS: layerTitile[i] },
+            params: { LAYERS: layerParams[i] },
             serverType: "geoserver",
             crossOrigin: "anonymous",
           });
+
+          // console.log(wmsSource[i]);
 
           url[i] = wmsSource[i].getFeatureInfoUrl(
             evt.coordinate,
@@ -44,6 +51,8 @@ const FeatureInfo = () => {
             { INFO_FORMAT: "application/json" }
           );
 
+          // console.log(url[i]);
+
           if (url[i]) {
             fetch(url[i])
               .then(function (response) {
@@ -51,7 +60,6 @@ const FeatureInfo = () => {
               })
               .then(function (data) {
                 if (data.features.length !== 0) {
-                  // console.log(data.features[0]);
                   setFeatureInfo((info) => [...info, data.features[0]]);
                 }
               })
@@ -63,6 +71,8 @@ const FeatureInfo = () => {
       }
     });
   };
+
+  // console.log(featureInfo);
 
   return (
     <div>
@@ -97,16 +107,21 @@ const FeatureInfo = () => {
 
         <Modal.Body>
           {featureInfo.map((attr, index) => {
+            {
+              /* console.log(attr); */
+            }
             return (
               <div key={index}>
                 <table>
-                  <tbody>
+                  <thead>
                     <tr>
                       <th>Name</th>
                       {Object.keys(attr.properties).map((key, index2) => {
                         return <th key={index2}>{key}</th>;
                       })}
                     </tr>
+                  </thead>
+                  <tbody>
                     <tr>
                       <td>{attr.id}</td>
                       {/* <th>{attr.geometry.type}</th> */}

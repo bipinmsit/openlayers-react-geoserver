@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Map from "./Map";
-import { Layers, MapLayerSwitcher } from "./Layers";
 import { fromLonLat } from "ol/proj";
 import "./App.css";
 import "ol/ol.css";
@@ -12,6 +11,7 @@ import {
   MeasurementControl,
   SearchLocation,
   ZoomtoExtentControl,
+  MapLayerSwitcher,
 } from "./Controls";
 
 import {
@@ -26,6 +26,7 @@ import {
   SelectByLocationForm,
 } from "./QueryForm";
 import NavBar from "./NavBar";
+import { Overlays } from "./Layers/Overlays";
 
 const App = () => {
   const [attributQueryTable, setAttributeQueryTable] = useState(true);
@@ -58,31 +59,30 @@ const App = () => {
           </div>
         </div>
         <div className="col-9">
-          <Map center={fromLonLat([-73.82745, 41.07567])} zoom={15}>
-            <Layers>
-              <MapLayerSwitcher />
-            </Layers>
+          <Overlays>
+            <Map center={fromLonLat([-73.82745, 41.07567])} zoom={15}>
+              <MapComponents>
+                <Legend />
+                <FeatureInfo />
+                <AddWmsLayers />
+              </MapComponents>
 
-            <MapComponents>
-              <Legend />
-              <FeatureInfo />
-              <AddWmsLayers />
-            </MapComponents>
+              {attributQueryTable ? (
+                <SelectByAttributeForm />
+              ) : locationQueryTable ? (
+                <SelectByLocationForm />
+              ) : null}
 
-            {attributQueryTable ? (
-              <SelectByAttributeForm />
-            ) : locationQueryTable ? (
-              <SelectByLocationForm />
-            ) : null}
-
-            <Controls>
-              <FullScreenControl />
-              <ZoomtoExtentControl />
-              <MousePositionControl />
-              <MeasurementControl />
-              <SearchLocation />
-            </Controls>
-          </Map>
+              <Controls>
+                <FullScreenControl />
+                <MapLayerSwitcher />
+                <ZoomtoExtentControl />
+                <MousePositionControl />
+                <MeasurementControl />
+                <SearchLocation />
+              </Controls>
+            </Map>
+          </Overlays>
         </div>
       </div>
     </div>

@@ -1,12 +1,11 @@
+import React, { useState, createContext } from "react";
 import Image from "ol/layer/Image";
-import Group from "ol/layer/Group";
 import ImageWMS from "ol/source/ImageWMS";
 
-// Layer group source: Geoserver
-export const overlays = new Group({
-  title: "Overlays",
-  visible: true,
-  layers: [
+export const OverlayContext = createContext();
+
+export const Overlays = ({ children }) => {
+  const [overlayLayers, setOverlayLayers] = useState([
     new Image({
       title: "BOUNDARY",
       source: new ImageWMS({
@@ -56,5 +55,11 @@ export const overlays = new Group({
         serverType: "geoserver",
       }),
     }),
-  ],
-});
+  ]);
+
+  return (
+    <OverlayContext.Provider value={[overlayLayers, setOverlayLayers]}>
+      {children}
+    </OverlayContext.Provider>
+  );
+};

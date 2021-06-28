@@ -154,7 +154,7 @@ const SelectByAttributeForm = () => {
 
     geojson.getSource().on("addfeature", function () {
       const extent = geojson.getSource().getExtent();
-      console.log(extent);
+      // console.log(extent);
       const convertedExtent = transformExtent(
         extent,
         createCustomProjection(),
