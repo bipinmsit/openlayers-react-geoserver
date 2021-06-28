@@ -1,8 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import MapContext from "../Map/MapContext";
 import ImageWMS from "ol/source/ImageWMS";
 import { Modal } from "react-bootstrap";
 import { OverlayContext } from "../Layers/Overlays";
+import { set } from "ol/transform";
 
 const FeatureInfo = () => {
   const { map } = useContext(MapContext);
@@ -12,13 +13,28 @@ const FeatureInfo = () => {
   let [featureInfo, setFeatureInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  // console.log(overlays.getLayers().getLength());
+  // console.log(selectIdentify);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    if (selectIdentify === "activeLayer") {
+      map.on("singleclick", getFeatureInfo);
+    } else if (selectIdentify === "default") {
+      map.un("singleclick", getFeatureInfo);
+    }
+
+    // return () => setFeatureInfo([]);
+  }, [selectIdentify, overlayLayers]);
 
   const changeHandler = (e) => {
     setSelectIdentify(e.target.value);
+  };
 
-    // when click on the feature then you will get the feature info
-    map.on("singleclick", (evt) => {
+  const getFeatureInfo = useCallback(
+    (evt) => {
       setShowModal(true);
 
       var viewResolution = /** @type {number} */ (
@@ -69,8 +85,9 @@ const FeatureInfo = () => {
           }
         }
       }
-    });
-  };
+    },
+    [setFeatureInfo, setShowModal, map, overlayLayers]
+  );
 
   // console.log(featureInfo);
 
@@ -107,9 +124,6 @@ const FeatureInfo = () => {
 
         <Modal.Body>
           {featureInfo.map((attr, index) => {
-            {
-              /* console.log(attr); */
-            }
             return (
               <div key={index}>
                 <table>
