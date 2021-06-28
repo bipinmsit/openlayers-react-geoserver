@@ -13,8 +13,6 @@ const FeatureInfo = () => {
   let [featureInfo, setFeatureInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  // console.log(selectIdentify);
-
   useEffect(() => {
     if (!map) {
       return;
@@ -26,7 +24,7 @@ const FeatureInfo = () => {
       map.un("singleclick", getFeatureInfo);
     }
 
-    // return () => setFeatureInfo([]);
+    return () => setFeatureInfo([]);
   }, [selectIdentify, overlayLayers]);
 
   const changeHandler = (e) => {
