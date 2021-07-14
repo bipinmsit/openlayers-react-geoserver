@@ -1,22 +1,13 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./Map.css";
 import MapContext from "./MapContext";
 import * as ol from "ol";
 import "../../node_modules/ol/ol.css";
 import { baseMaps } from "../Layers/BaseMaps";
-import { OverlayContext } from "../Layers/Overlays";
-import Group from "ol/layer/Group";
 
 const Map = ({ children, zoom, center }) => {
   const mapRef = useRef();
   const [map, setMap] = useState(null);
-  const [overlayLayers, setOverlayLayers] = useContext(OverlayContext);
-
-  // let overlays = new Group({
-  //   title: "Overlays",
-  //   visible: true,
-  //   layers: overlayLayers,
-  // });
 
   // on component mount
   useEffect(() => {

@@ -27,6 +27,7 @@ import {
 } from "./QueryForm";
 import NavBar from "./NavBar";
 import { Overlays } from "./Layers/Overlays";
+import DrawFeatures from "./MapComponents/DrawFeatures";
 
 const App = () => {
   const [attributQueryTable, setAttributeQueryTable] = useState(true);
@@ -64,6 +65,7 @@ const App = () => {
               <MapComponents>
                 <Legend />
                 <FeatureInfo />
+                <DrawFeatures />
                 <AddWmsLayers />
               </MapComponents>
 

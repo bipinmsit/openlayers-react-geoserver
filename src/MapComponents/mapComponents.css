@@ -17,3 +17,21 @@ td {
   width: 24.2vw;
   overflow-y: scroll;
 }
+
+.featureInfo {
+  position: absolute;
+  z-index: 1;
+  margin-left: 5em;
+}
+
+.drawFeature {
+  position: absolute;
+  z-index: 1;
+  margin-left: 46em;
+}
+
+.wmsLayers {
+  position: absolute;
+  z-index: 1;
+  margin-left: 75em;
+}
