@@ -5,6 +5,7 @@ import Image from "ol/layer/Image";
 import ImageWMS from "ol/source/ImageWMS";
 import MapContext from "../Map/MapContext";
 import { transformExtent } from "ol/proj";
+import "./mapComponents.css";
 
 const AddWmsLayers = () => {
   const [showModal, setShowModal] = useState(false);
