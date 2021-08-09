@@ -37,7 +37,7 @@ export const baseMaps = new Group({
       visible: false,
       source: new ImageWMS({
         url: "http://localhost:8080/geoserver/wms",
-        params: { LAYERS: "mosaic_reg:output" },
+        params: { LAYERS: "	mosaic_reg:output" },
         ratio: 1,
         serverType: "geoserver",
       }),

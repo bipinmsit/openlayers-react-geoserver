@@ -1,17 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
 import MapContext from "../Map/MapContext";
 import { Draw, Snap } from "ol/interaction";
-import GeoJSON from "ol/format/GeoJSON";
 import { Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
 import Select from "ol/interaction/Select";
-import { Style, Icon } from "ol/style";
-import { transformExtent } from "ol/proj";
 
 const DrawFeatures = () => {
   const { map } = useContext(MapContext);
   const [featureType, setFeatureType] = useState("");
-  const [undo, setUndo] = useState("Undo");
 
   //   console.log(featureType);
 
@@ -53,40 +49,6 @@ const DrawFeatures = () => {
     // e.preventDefault();
     setFeatureType(e.target.value);
   };
-
-  // var style = new Style({
-  //   // radius: 10,
-  //   image: new Icon({
-  //     anchor: [0.5, 46],
-  //     anchorXUnits: "fraction",
-  //     anchorYUnits: "pixels",
-  //     src: "../data/googlemaps.jpg",
-  //   }),
-  // });
-
-  // const myData = new VectorLayer({
-  //   source: new VectorSource({
-  //     url: "../data/test.geojson",
-  //     format: new GeoJSON(),
-  //   }),
-  //   style: style,
-  // });
-
-  // myData.getSource().on("addfeature", function () {
-  //   const extent = myData.getSource().getExtent();
-  //   console.log(extent);
-  //   const convertedExtent = transformExtent(extent, "EPSG:4326", "EPSG:3857");
-  //   console.log(convertedExtent);
-  //   // alert(geojson.getSource().getExtent());
-  //   map.getView().fit(convertedExtent, {
-  //     duration: 1590,
-  //     size: map.getSize(),
-  //   });
-  // });
-  // overlays.getLayers().push(geojson);
-  // if (map) {
-  //   map.addLayer(myData);
-  // }
 
   const downloadFeatureHandler = () => {
     const select = new Select();
